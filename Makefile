@@ -17,4 +17,4 @@ image-remove:
 	docker rmi yvv4docker/browser-firefox:latest
 
 check:
-	curl -s -X POST http://localhost:9222/session -H 'Content-Type: application/json' -d '{"capabilities":{"alwaysMatch":{"webSocketUrl":true}}}'
+	@curl -sf http://localhost:9222/ -o /dev/null -w '%{http_code}\n'
