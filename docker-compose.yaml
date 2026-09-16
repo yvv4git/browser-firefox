@@ -1,6 +1,7 @@
 services:
   firefox:
     image: yvv4docker/browser-firefox:latest
+    platform: linux/amd64
     container_name: browser-firefox
     build: .
     ports:
@@ -15,7 +16,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     shm_size: 2g
-    restart: unless-stopped
+    mem_limit: 2g
+    restart: on-failure:2
     logging:
       driver: "json-file"
       options:

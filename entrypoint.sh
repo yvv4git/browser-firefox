@@ -12,6 +12,8 @@ PROFILE_DIR=/config/firefox-data
 
 mkdir -p "$PROFILE_DIR"
 
+rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
+
 Xvfb :99 -screen 0 ${RESOLUTION}x24 -ac -nolisten tcp &
 XVFB_PID=$!
 
