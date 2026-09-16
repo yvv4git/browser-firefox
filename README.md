@@ -1,5 +1,7 @@
 # Firefox Browser
 
+![Firefox Browser logo](./assets/logo.jpeg)
+
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Image-2496ED?style=flat-square&logo=docker&logoColor=white)](Dockerfile)
 [![Browser](https://img.shields.io/badge/Browser-Firefox%20Nightly-FF7139?style=flat-square)](https://www.mozilla.org/firefox/nightly/)
