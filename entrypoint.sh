@@ -2,8 +2,8 @@
 set -e
 
 cleanup() {
-    kill $FIREFOX_PID $X11VNC_PID $NOVNC_PID $XVFB_PID 2>/dev/null
-    wait $FIREFOX_PID $X11VNC_PID $NOVNC_PID $XVFB_PID 2>/dev/null
+    kill $FIREFOX_PID $X11VNC_PID $NOVNC_PID $XVFB_PID $SOCAT_PID 2>/dev/null
+    wait $FIREFOX_PID $X11VNC_PID $NOVNC_PID $XVFB_PID $SOCAT_PID 2>/dev/null
 }
 trap cleanup SIGTERM SIGINT
 
@@ -11,6 +11,8 @@ RESOLUTION=${RESOLUTION:-1920x1080}
 PROFILE_DIR=/config/firefox-data
 
 mkdir -p "$PROFILE_DIR"
+
+rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
 
 Xvfb :99 -screen 0 ${RESOLUTION}x24 -ac -nolisten tcp &
 XVFB_PID=$!
@@ -69,4 +71,24 @@ fi
 
 /opt/firefox/firefox "${FIREFOX_ARGS[@]}" &
 FIREFOX_PID=$!
+
+echo "waiting for Firefox Remote Agent on port 9222..."
+for i in $(seq 30); do
+    if curl -sf http://127.0.0.1:9222/ >/dev/null 2>&1; then
+        echo "Firefox Remote Agent is ready"
+        break
+    fi
+    sleep 1
+done
+
+# Bridge the Docker-published port 9222 to Firefox's loopback listener on
+# the same port. Firefox RemoteAgent binds 127.0.0.1 only (httpd.js can't
+# bind an IPv4 address, Bug 1783938), while Docker's published port targets
+# the container eth0. Bind socat to the eth0 IP specifically so it does not
+# collide with Firefox's 127.0.0.1:9222. The same port is kept on both sides
+# so the Host header Firefox sees matches its server identity.
+CONTAINER_IP=$(hostname -I | awk '{print $1}')
+socat TCP-LISTEN:9222,fork,reuseaddr,bind="$CONTAINER_IP" TCP:127.0.0.1:9222 &
+SOCAT_PID=$!
+
 wait $FIREFOX_PID

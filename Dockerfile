@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xz-utils \
     dnsutils \
     dumb-init \
+    socat \
     fonts-liberation \
     fonts-noto-color-emoji \
     fontconfig \
