@@ -1,0 +1,23 @@
+services:
+  firefox:
+    image: yvv4docker/browser-firefox:latest
+    container_name: browser-firefox
+    build: .
+    ports:
+      - "9222:9222"
+      - "3000:3000"
+    environment:
+      - "RESOLUTION=${RESOLUTION:-1920x1080}"
+      - "PROXY=${PROXY:-}"
+      - "FIREFOX_ARGS_EXTRA=${FIREFOX_ARGS_EXTRA:-}"
+    volumes:
+      - "./profile:/config"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: 2g
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
